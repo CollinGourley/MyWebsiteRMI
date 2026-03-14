@@ -1,0 +1,158 @@
+---
+title: 'Homework 5-Complete'
+subtitle: "RMI 4226 Risk and Insurance Data Analytics -- Spring 2025"
+format:
+  html:
+    embed-resources: true
+    toc: true
+    toc-location: left
+---
+
+Objective: This exercise serves the purpose of helping student using simple linear regression models.
+
+1.  Import the `medical_insurance_expense.csv` data and remove the duplicated observations, create dummy variables for character variables, and save it "medical_data".
+
+```{r}
+library(CSTools)
+medical_dataset <- read.csv("medical_insurance_expense-1.csv")
+
+library(dplyr)
+medical_dataset <- medical_dataset %>% distinct()
+
+medical_data <- medical_dataset %>%
+  mutate(
+    sex = as.factor(sex),
+    smoker = as.factor(smoker),
+    region = as.factor(region))
+```
+
+2.  Find the number of observations (N), mean, standard deviation,min, quartiles and max for all numerical/integer variables: age, bmi,children, charges, and the dummy variables created in question 1. Save it as a data frame called summary_statistics.
+
+```{r}
+summary_statistics <- medical_dataset %>%
+  select(age, bmi, children, charges, starts_with("sex"),
+         starts_with("smoker"), starts_with("region")) %>%
+  summarise(list(
+    Q1 = ~quantile(., 0.25),
+    Median = ~median(.),
+    Q3 = ~quantile(., 0.75),
+    Max = ~max(.),
+    N = ~length(.),
+    Mean = ~mean(.),
+    SD = ~sd(.),
+    Min = ~min(.)
+  ))
+
+```
+
+3.  Split the medical_data into training and test data sets with a 70-30 split and save them as train_strat and test_strat. Set your seed as 123. When split the data, please make sure each data set have the same proportion of smoker versus non-smoker. Run a simple linear regression model using train_strat and save it as "model_SL" and summary the output.
+
+$$ charges = \beta_0 + \beta_1 \times bmi + \varepsilon  $$
+
+```{r}
+library(caret)
+
+set.seed(123)
+
+train_index <- createDataPartition(medical_data$smoker,
+                                   p = 0.7,
+                                   list = FALSE)
+
+train_strat <- medical_data[train_index, ]
+test_strat  <- medical_data[-train_index, ]
+
+model_SL <- lm(charges ~ bmi, data = train_strat)
+summary(model_SL)
+
+
+```
+
+4.  Plot the bmi and charges, and the fitted line with 95% confidence intervals.
+
+```{R}
+ggplot(train_strat, aes(x = bmi, y = charges)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", level = 0.95)
+
+```
+
+5.  Can you write down the estimated linear regression equation? How do you interpret the parameters and there statistics, as well as the overall model evaluation.
+
+```{r}
+summary(model_SL)
+
+```
+
+Linear Regression Equation- Charges = 1671.8 + 373.7(BMI), this model is not a good indicator as thr Rsquared value is .o3374, which is extremely low.
+
+6.  To test the hypothesis that medical insurance charges is positively associated with policyholder's bmi. Can you justify whether the training data support his hypothesis and why.
+
+The training module doesn't justify the null hypothesis, as the p value is extremely low. THis means that the values are corelated in some way.
+
+7.  Find the confidence interval for model parameters at 95% confidence level. ($\hat{\beta_1} \pm 2*SE$)
+
+```{r}
+confint(model_SL, level = 0.95)
+
+```
+
+8.  Check the histogram of residuals, and how to you evaluate your data.
+
+```{r}
+residuals_SL <- residuals(model_SL)
+
+hist(residuals_SL,
+     main = "Histogram of Residuals",
+     xlab = "Residuals")
+
+
+```
+
+Based on this Residual plot, the model shows that the residual plot is a bell curve, however the residual plot has a positive skew. There does not appear to be any outliers.
+
+9.  Predict expected charges add it to train_strat and test_strat, and find mean squared errors, respectively
+
+```{r}
+train_strat$predicted <- predict(model_SL, train_strat)
+
+test_strat$predicted <- predict(model_SL, test_strat)
+
+mse_train <- mean((train_strat$charges - train_strat$predicted)^2)
+mse_test  <- mean((test_strat$charges - test_strat$predicted)^2)
+
+mse_train
+mse_test
+
+```
+
+10. Check the linear relationship line between bmi and charges, and the fitted line with 95% confidence intervals for test_strat
+
+```{r}
+
+ggplot(test_strat, aes(x = bmi, y = charges)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", level = 0.95) +
+  labs( x = "BMI",
+       y = "Medical Charges")
+```
+
+10. Predict the expected medical charges when a policyholder has bmi at 30 using the estimated simple linear regression model.
+
+```{r}
+predict(model_SL, newdata = data.frame(bmi = 30))
+
+```
+
+11. Print out the model using `stargazer` package.
+
+```{r}
+library(stargazer)
+stargazer(model_SL,
+          type = "text",
+          title = "Simple Linear Regression Results",
+          dep.var.labels = "Medical Charges",
+          covariate.labels = "BMI",
+          digits = 3)
+
+
+```

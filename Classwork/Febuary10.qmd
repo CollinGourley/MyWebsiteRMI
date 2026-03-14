@@ -1,0 +1,96 @@
+---
+title: "Febuary10"
+format: html
+---
+
+```{r}
+rm(list = ls())
+wide_product_sales <- data.frame(
+  product_id = c("P101", "P102", "P103"),
+  January_Sales = c(250, 180, 300),
+  Febuary_Sales = c(280, 200, 320),
+  March_Sales = c(300, 220, 350)
+  )
+
+long_product_sales <- data.frame(
+  product_id = rep(c("P101", "P102", "P103"), 3),
+  month = rep(c("January", "Febuary", "March"), 3),
+  sales = c(250, 180, 300, 280, 200, 320, 300, 220, 350)
+)
+library(tidyr)
+
+wide_product_sales |> 
+  pivot_longer(
+    cols = c(January_Sales, Febuary_Sales, March_Sales),
+    names_to = "Month",
+    values_to = "Sales"
+  )
+
+long_product_sales2 <- wide_product_sales |> 
+  pivot_wider(
+   names_from = Month,
+   values_from = Sales
+  )
+```
+
+```{r}
+library(ggplot2)
+
+long_product_sales |>
+  ggplot(aes(x = month, y = sales, color = product_id)) +
+  geom_line()
+
+mtcars
+
+mtcars |>
+  ggplot(aes(x = wt, y= mpg)) +
+  geom_point() +
+labs(titles = "Car Weight vs Miles Per Gallon",
+     x = "weights",
+     y= "miles per gallon")
+
+```
+
+
+```{r}
+mtcars|>
+  ggplot(aes(x = factor(gear))) +
+  geom_bar()
+
+data.frame(
+  time_period = factor(1:3, 2),
+  group = rep (c("A", "B"), 3),
+  value = 4:9
+  
+  
+  )|> 
+  ggplot(aes( x= time_period, y = value, fill = group)) + 
+  geom_col( position = "stack")
+```
+
+``` {r}
+
+mtcars |>
+  ggplot(aes(x = mpg)) +
+  geom_histogram(binwidth = 5)
+
+```
+```{r}
+mtcars |>
+  ggplot(aes(x = mpg, y= factor(gear))) + 
+  geom_boxplot()
+
+
+
+
+```
+
+``` {r}
+
+mtcars |>
+  ggplot(aes(x = mpg, y= factor(gear)))
+
+```
+
+
+

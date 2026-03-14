@@ -1,0 +1,29 @@
+---
+title: "Collin"
+subtitle: "Supply Chain Management"
+# `1756079978672.jpg` photo by Jan Tinneberg on https://unsplash.com
+image: '1756079978672.jpg'
+about: # https://quarto.org/docs/websites/website-about.html
+  template: jolla
+  links:
+    - icon: github
+      text: Github
+      href: https://github.com/CollinGourley 
+    - icon: linkedin
+      text: LinkedIn
+      href: hwww.linkedin.com/in/collingourley 
+---
+
+Just some more info about my credentials.
+
+## Education
+
+University of South Florida, Tampa \| Tampa Florida \| Sept 2023 - December 2026
+
+## Experience
+
+Marten Transport \| Supply Chain and Operations Intern \| March 2026- present
+Devon's Steak and Seafood \| Serving Assistant \| June 2024- July 2025
+Penn FC Youth Soccer Club \| Teen Trainer Coordinator \| May 2022- August 2023
+EPSARC \| Grassroots Youth Soccer Referee \| August 2021- May 2023
+
